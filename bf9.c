@@ -37,7 +37,6 @@ run(char* prog)
 			print("%c", *dp);
 			break;
 		case ',':
-			// TODO
 			*dp=Bgetc(&bstdin);
 			break;
 		case '[':
