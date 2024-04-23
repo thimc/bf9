@@ -15,7 +15,6 @@ a brainfuck interpreter written in Plan 9 C
 | ]         | If the bytes is nonzero jump back to the matching [            |
 
 ## Caveats
-The interpreter will only read the first 4096 bytes of any file.\
 The memory array size is 65535 bytes.
 
 ## Usage
