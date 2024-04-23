@@ -3,10 +3,9 @@
 #include <bio.h>
 
 #define MEMSIZ 65535
-#define PROGSIZ 4096
 
 char memory[MEMSIZ];
-char program[4096];
+char *program;
 
 void
 run(char* prog)
@@ -71,27 +70,30 @@ void
 load(char* path)
 {
 	Biobuf* buf;
-	int i;
-	char c;
+	ulong nr;
+	vlong siz;
 
 	if((buf = Bopen(path, OREAD)) == nil)
 		sysfatal("Bopen: %r");
-	i=0;
-	while((c = Bgetc(buf)) != Beof)
-		program[i++]=c;
+	siz = Bseek(buf, 0L, 2);
+	Bseek(buf, 0L, 0);
+	if((program = malloc(sizeof(*program)*siz)) == nil)
+		sysfatal("malloc: %r");
+	if((nr = Bread(buf, program, siz)) != siz)
+		sysfatal("Bread: %r");
 	Bterm(buf);
+	USED(nr);
 }
 
 void
 main(int argc, char* argv[])
 {
-	int i;
-
-	if (argc < 2)
-		sysfatal("usage: bf9 <source file>");
+	if(argc < 2){
+		fprint(2, "usage: %s <source file>\n", argv0);
+		exits("usage");
+	}
 	load(argv[1]);
-	for(i=0;i <MEMSIZ; i++)
-		memory[i]=0;
+	memset(memory, 0, sizeof memory);
 	run(program);
 	exits(nil);
 }
